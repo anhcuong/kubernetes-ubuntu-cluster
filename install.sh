@@ -157,7 +157,6 @@ if [[ $INSTALLER_TYPE == 'master' ]]; then
   
   trap before_exit EXIT
   start_services
-fi
 else
   trap before_exit EXIT
   update_kubernetes_slave
