@@ -77,13 +77,25 @@ update_kubernetes_slave(){
 	cp -vr kube_$KUBERNETE_VERSION/minion/init_scripts/* $DEFAULT_INITD_PATH/
 	# update kubelet config
     echo "KUBELET=$EXECUTABLE_LOCATION/kubelet" | sudo tee -a /etc/default/kubelet
-    echo "KUBELET_OPTS=\"--address=0.0.0.0 --port=10250 --hostname_override=localhost --api_servers=http://$MASTER_IP:8080 --enable_server=true --logtostderr=true --v=0\"" | sudo tee -a /etc/default/kubelet
+    echo "KUBELET_OPTS=\"--address=0.0.0.0 --port=10250 --api_servers=http://$MASTER_IP:8080 --enable_server=true --logtostderr=true --v=0\"" | sudo tee -a /etc/default/kubelet
     echo "kubelet config updated successfully"
  
     # update kube-proxy config
     echo "KUBE_PROXY=$EXECUTABLE_LOCATION/kube-proxy" | sudo tee -a  /etc/default/kube-proxy
-    echo -e "KUBE_PROXY_OPTS=\"--etcd_servers=http://$MASTER_IP:4001 --master=$MASTER_IP:8080 --logtostderr=true \"" | sudo tee -a /etc/default/kube-proxy
+    echo -e "KUBE_PROXY_OPTS=\" --master=$MASTER_IP:8080 --logtostderr=true \"" | sudo tee -a /etc/default/kube-proxy
     echo "kube-proxy config updated successfully"	
+}
+
+run_flannel(){
+	echo '######### Updating configurations for flannel slave ############'
+	service docker stop
+	apt-get install -y bridge-utils
+	ip link set docker0 down
+	flannel -etcd-endpoints=$MASTER_IP:4001 && sleep 2
+	source /run/flannel/subnet.env
+	echo "--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU" >> /etc/default/docker
+	service docker start
+	echo '######### Finish configurations for flannel slave ############'
 }
 
 stop_services() {
@@ -95,18 +107,21 @@ stop_services() {
 		sudo service kube-controller-manager stop || true
 		sudo service kube-scheduler stop || true
 		sudo rm -rf $EXECUTABLE_LOCATION/kube*
+		sudo rm -rf $DEFAULT_CONFIG_PATH/kube*
 	else
 		echo 'Stopping slave services...'
 		sudo service kubelet stop || true
 		sudo service kube-proxy stop || true
 		sudo rm -rf $EXECUTABLE_LOCATION/kube*
+		sudo rm -rf $DEFAULT_CONFIG_PATH/kube*
 	fi
 }
 
 start_services() {
 	if [[ $INSTALLER_TYPE == 'master' ]]; then
-		echo 'Starting slave services...'
+		echo 'Starting master services...'
 		sudo service etcd start
+		etcdctl mk /coreos.com/network/config '{"Network":"172.17.0.0/16"}'
 		## No need to start kube-apiserver, kube-controller-manager and kube-scheduler
 		## because the upstart scripts boot them up when etcd starts
 	else
@@ -163,6 +178,10 @@ else
   
   trap before_exit EXIT
   start_services
+
+  trap before_exit EXIT
+  run_flannel
+
 fi
  
 trap before_exit EXIT
