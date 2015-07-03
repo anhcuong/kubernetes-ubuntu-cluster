@@ -23,8 +23,7 @@ fi
 
 config_etcd(){
 
-	cd "etcd$ETCD_VERSION";
-	cp -v * $EXECUTABLE_LOCATION;
+	cp -v etcd$ETCD_VERSION/* $EXECUTABLE_LOCATION;
 
 	etcd_path=$(which etcd);
     if [[ -z "$etcd_path" ]]; then
