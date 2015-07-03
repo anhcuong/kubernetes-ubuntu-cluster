@@ -16,6 +16,7 @@
 # Run install script, state your kubernete version
 export VERSION=0.19.3
 ./install.sh $VERSION
+```
 
 ## Contacts
 [Frank Tran](https://bitbucket.org/FrankRazer)
