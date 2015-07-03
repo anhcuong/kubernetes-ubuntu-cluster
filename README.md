@@ -18,8 +18,8 @@
 # Run install script, state your master IP, kubernete, etcd version and type of machine (master/slave)
 chmod o+x install.sh
 export MASTER_IP=192.168.33.50
-export KUBERNETE_VERSION=0.19.3
-export ETCD_VERSION=2.0.5
+export KUBERNETE_VERSION=v0.19.3
+export ETCD_VERSION=v2.0.5
 ./install.sh master/slave
 ```
 

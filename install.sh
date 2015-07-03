@@ -5,8 +5,8 @@
 # 	
 
 export DEFAULT_CONFIG_PATH=/etc/default/
-export DEFAULT_INIT_PATH = /etc/init/
-export DEFAULT_INITD_PATH = /etc/init.d/
+export DEFAULT_INIT_PATH=/etc/init/
+export DEFAULT_INITD_PATH=/etc/init.d/
 export EXECUTABLE_LOCATION=/usr/bin/
 export ETCD_PORT=4001
 export is_success=false
@@ -22,9 +22,8 @@ else
 fi
 
 config_etcd(){
-
-	cp -v etcd$ETCD_VERSION/* $EXECUTABLE_LOCATION;
-
+	chmod o+x etcd_$ETCD_VERSION/*
+	cp -v etcd_$ETCD_VERSION/* $EXECUTABLE_LOCATION;
 	etcd_path=$(which etcd);
     if [[ -z "$etcd_path" ]]; then
       echo 'etcd not installed ...'
@@ -45,6 +44,9 @@ update_etcd(){
 
 update_kubernetes_master(){
 	echo '######### Updating configurations for kubernetes master ############'
+	chmod o+x kube_$KUBERNETE_VERSION/bin/*
+	chmod o+x kube_$KUBERNETE_VERSION/master/init_scripts/*
+	chmod o+x kube_$KUBERNETE_VERSION/master/init_conf/*
 	cp -vr kube_$KUBERNETE_VERSION/bin/* $EXECUTABLE_LOCATION/
 	cp -vr kube_$KUBERNETE_VERSION/master/init_conf/* $DEFAULT_INIT_PATH/
 	cp -vr kube_$KUBERNETE_VERSION/master/init_scripts/* $DEFAULT_INITD_PATH/
@@ -67,6 +69,9 @@ update_kubernetes_master(){
 
 update_kubernetes_slave(){
 	echo '######### Updating configurations for kubernetes slave ############'
+	chmod o+x kube_$KUBERNETE_VERSION/bin/*
+	chmod o+x kube_$KUBERNETE_VERSION/minion/init_scripts/*
+	chmod o+x kube_$KUBERNETE_VERSION/minion/init_conf/*
 	cp -vr kube_$KUBERNETE_VERSION/bin/* $EXECUTABLE_LOCATION/
 	cp -vr kube_$KUBERNETE_VERSION/minion/init_conf/* $DEFAULT_INIT_PATH/
 	cp -vr kube_$KUBERNETE_VERSION/minion/init_scripts/* $DEFAULT_INITD_PATH/
