@@ -91,7 +91,8 @@ run_flannel(){
 	service docker stop
 	apt-get install -y bridge-utils
 	ip link set docker0 down
-	flannel -etcd-endpoints=$MASTER_IP:4001 && sleep 2
+	start-stop-daemon --start --background --quiet --exec /usr/bin/flanneld -- "--etcd-endpoints=http://$MASTER_IP:4001"
+	sleep 2
 	source /run/flannel/subnet.env
 	echo "--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU" >> /etc/default/docker
 	service docker start
@@ -108,6 +109,10 @@ stop_services() {
 		sudo service kube-scheduler stop || true
 		sudo rm -rf $EXECUTABLE_LOCATION/kube*
 		sudo rm -rf $DEFAULT_CONFIG_PATH/kube*
+		sudo rm -rf $EXECUTABLE_LOCATION/etcd*
+		sudo rm -rf $DEFAULT_CONFIG_PATH/etcd*
+		sudo rm -rf $EXECUTABLE_LOCATION/flannel*
+		sudo rm -rf $DEFAULT_CONFIG_PATH/flannel*
 	else
 		echo 'Stopping slave services...'
 		sudo service kubelet stop || true
@@ -120,7 +125,7 @@ stop_services() {
 start_services() {
 	if [[ $INSTALLER_TYPE == 'master' ]]; then
 		echo 'Starting master services...'
-		sudo service etcd start
+		sudo service etcd start && sleep 5
 		etcdctl mk /coreos.com/network/config '{"Network":"172.17.0.0/16"}'
 		## No need to start kube-apiserver, kube-controller-manager and kube-scheduler
 		## because the upstart scripts boot them up when etcd starts
