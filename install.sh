@@ -184,8 +184,8 @@ else
   trap before_exit EXIT
   start_services
 
-  trap before_exit EXIT
-  run_flannel
+  #trap before_exit EXIT
+  #run_flannel
 
 fi
  
