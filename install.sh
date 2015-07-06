@@ -67,6 +67,13 @@ update_kubernetes_master(){
     echo "kube-scheduler config updated successfully"
 }
 
+update_hosts(){
+
+	export NODE_IP="$(ifconfig eth1 | perl -nle'/dr:(\S+)/ && print $1')"
+	## Replace the environment app
+	sed -i 's/127.0.1.1/'$NODE_IP'/g' /etc/hosts
+}
+
 update_kubernetes_slave(){
 	echo '######### Updating configurations for kubernetes slave ############'
 	chmod o+x kube_$KUBERNETE_VERSION/bin/*
@@ -90,11 +97,11 @@ run_flannel(){
 	echo '######### Updating configurations for flannel slave ############'
 	service docker stop
 	apt-get install -y bridge-utils
-	ip link set docker0 down
+	ip link set docker0 down && brctl delbr docker0
 	start-stop-daemon --start --background --quiet --exec /usr/bin/flanneld -- "--etcd-endpoints=http://$MASTER_IP:4001"
 	sleep 2
-	source /run/flannel/subnet.env
-	echo 'DOCKER_OPTS="--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU"' >> /etc/default/docker
+	source /run/flannel/subnet.env && sleep 2
+	echo "DOCKER_OPTS=\"--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU\"" >> /etc/default/docker
 	service docker start
 	echo '######### Finish configurations for flannel slave ############'
 }
@@ -164,6 +171,9 @@ before_exit() {
 
 trap before_exit EXIT
 stop_services
+
+trap before_exit EXIT
+update_hosts
  
 if [[ $INSTALLER_TYPE == 'master' ]]; then
   trap before_exit EXIT
@@ -184,8 +194,8 @@ else
   trap before_exit EXIT
   start_services
 
-  #trap before_exit EXIT
-  #run_flannel
+  trap before_exit EXIT
+  run_flannel
 
 fi
  
