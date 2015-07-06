@@ -98,7 +98,7 @@ run_flannel(){
 	service docker stop
 	apt-get install -y bridge-utils
 	ip link set docker0 down && brctl delbr docker0
-	start-stop-daemon --start --background --quiet --exec /usr/bin/flanneld -- "--etcd-endpoints=http://$MASTER_IP:4001"
+	start-stop-daemon --start --background --quiet --exec /usr/bin/flanneld -- "--etcd-endpoints=http://$MASTER_IP:4001 -iface=eth1"
 	sleep 2
 	source /run/flannel/subnet.env && sleep 2
 	echo "DOCKER_OPTS=\"--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU\"" >> /etc/default/docker
