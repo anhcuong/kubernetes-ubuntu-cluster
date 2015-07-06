@@ -94,7 +94,7 @@ run_flannel(){
 	start-stop-daemon --start --background --quiet --exec /usr/bin/flanneld -- "--etcd-endpoints=http://$MASTER_IP:4001"
 	sleep 2
 	source /run/flannel/subnet.env
-	echo "--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU" >> /etc/default/docker
+	echo 'DOCKER_OPTS="--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU"' >> /etc/default/docker
 	service docker start
 	echo '######### Finish configurations for flannel slave ############'
 }
