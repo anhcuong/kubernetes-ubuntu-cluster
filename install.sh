@@ -22,8 +22,8 @@ else
 fi
 
 config_etcd(){
-	chmod o+x etcd_$ETCD_VERSION/*
-	cp -v etcd_$ETCD_VERSION/* $EXECUTABLE_LOCATION;
+	chmod o+x etcd_$ETCD_VER/*
+	cp -v etcd_$ETCD_VER/* $EXECUTABLE_LOCATION;
 	etcd_path=$(which etcd);
     if [[ -z "$etcd_path" ]]; then
       echo 'etcd not installed ...'
@@ -44,19 +44,19 @@ update_hosts(){
 
 update_kubernetes_master(){
 	echo '######### Updating configurations for kubernetes master ############'
-	chmod o+x kube_$KUBERNETE_VERSION/bin/*
-	chmod o+x kube_$KUBERNETE_VERSION/master/init_scripts/*
-	chmod o+x kube_$KUBERNETE_VERSION/master/init_conf/*
+	chmod o+x kube_$KUBERNETE_VER/bin/*
+	chmod o+x kube_$KUBERNETE_VER/master/init_scripts/*
+	chmod o+x kube_$KUBERNETE_VER/master/init_conf/*
 	cp -vr supervisord/master_supervisord.conf $DEFAULT_CONFIG_PATH/supervisord.conf
-	cp -vr kube_$KUBERNETE_VERSION/bin/* $EXECUTABLE_LOCATION/
+	cp -vr kube_$KUBERNETE_VER/bin/* $EXECUTABLE_LOCATION/
 }
 
 
 update_kubernetes_slave(){
 	echo '######### Updating configurations for kubernetes slave ############'
-	chmod o+x kube_$KUBERNETE_VERSION/bin/*
+	chmod o+x kube_$KUBERNETE_VER/bin/*
 	cp -vr supervisord/slave_supervisord.conf $DEFAULT_CONFIG_PATH/supervisord.conf
-	cp -vr kube_$KUBERNETE_VERSION/bin/* $EXECUTABLE_LOCATION/
+	cp -vr kube_$KUBERNETE_VER/bin/* $EXECUTABLE_LOCATION/
 }
 
 run_supervisord_slave(){
