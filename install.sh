@@ -71,7 +71,7 @@ run_supervisord_master(){
 	supervisord -c $DEFAULT_CONFIG_PATH/supervisord.conf
 	sleep 5
 	etcdctl mk /coreos.com/network/config '{"Network":"172.17.0.0/16"}'
-	is_success = true
+	is_success=true
 }
 
 run_docker_with_flannel_network(){
@@ -81,7 +81,7 @@ run_docker_with_flannel_network(){
 	source /run/flannel/subnet.env && sleep 2
 	echo "DOCKER_OPTS=\"--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU\"" >> /etc/default/docker
 	service docker start
-	is_success = true
+	is_success=true
 }
 
 stop_services() {
