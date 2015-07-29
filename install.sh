@@ -51,7 +51,7 @@ update_kubernetes_master(){
 	cp -vr kube_$KUBERNETE_VER/bin/* $EXECUTABLE_LOCATION/
 }
 
-
+:
 update_kubernetes_slave(){
 	echo '######### Updating configurations for kubernetes slave ############'
 	chmod o+x kube_$KUBERNETE_VER/bin/*
@@ -79,7 +79,7 @@ run_docker_with_flannel_network(){
 	apt-get install -y bridge-utils
 	ip link set docker0 down && brctl delbr docker0
 	source /run/flannel/subnet.env && sleep 2
-	echo "DOCKER_OPTS=\"--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU\" --insecure-registry=11.1.1.94:5000" >> /etc/default/docker
+	echo "DOCKER_OPTS=\"--bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU --insecure-registry=11.1.1.94:5000\"" >> /etc/default/docker
 	service docker start
 	is_success=true
 }
