@@ -15,7 +15,10 @@
 	- Config kubernete and etcd settings
 
 ```sh
-# Run install script, state your master IP, kubernete, etcd version and type of machine (master/slave)
+# Start from vagrant by edit the Vagrantfile for ip and version
+vagrant up
+
+# Or manually run install script, state your master IP, kubernete, etcd version and type of machine (master/slave)
 chmod o+x install.sh
 export MASTER_IP=192.168.33.50
 export KUBERNETE_VER=v0.19.3
@@ -24,4 +27,4 @@ export ETCD_VER=v2.0.5
 ```
 
 ## Contacts
-[Frank Tran](https://bitbucket.org/FrankRazer)
+[Frank Tran](https://github.com/anhcuong)
